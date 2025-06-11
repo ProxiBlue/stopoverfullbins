@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Overfull Bins</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Report Overfull Bins</h1>
+        </header>
+
+        <div class="info-section">
+            <p>Emails from this form will be sent to Rockingham Council email (<strong id="dest-email"></strong>).</p>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('dest-email').textContent = DEST_EMAIL;
+                });
+            </script>
+            <p>Email verification is required before your message is sent to the council to prevent abuse of this form.</p>
+            <p><strong>Important:</strong> Users must use their council (rates) registered email to receive a ticket number and response from the council, otherwise the email will be ignored. Rate payers have a say.</p>
+            <p>You will get a copy of the email that is sent to the council. This will facilitate you simply forwarding the email to the council if they decide to block the sender of the automated emails from this service.</p>
+            <p><strong>Important:</strong>Check your spam folder. The verification email may drop there.</p>
+            <p>Please refer to the <a href="https://rockingham.wa.gov.au/your-services/waste-and-recycling/bin-collection" target="_blank">Rockingham Council bin rules</a> as set forth on their online website.</p>
+            <p>The goal of this form is to facilitate the reports to our council, not to harass the council. I have been told by a council representative that when notified, they will send out notices.</p>
+            I am concerned this issue will be worse with FOGO, and the problem needs to be addressed before FOGO goes ahead.
+        </div>
+
+        <main>
+            <form id="reportForm" action="server/submit.php" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="email">Council Registered Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Offending Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Start typing an address..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="10" placeholder="Your message will be pre-filled with the default text..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="images">Attach Images (Required, Max 5):</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="images" name="images" accept="image/*" multiple>
+                        <div class="file-upload-button">Choose Files</div>
+                    </div>
+                    <div id="file-error-message" class="file-error-message hidden">Please select at least one image</div>
+                    <div id="image-preview-container" class="image-preview-container"></div>
+                    <div id="file-count" class="file-count">0 files selected</div>
+                    <div id="upload-progress-container" class="upload-progress-container"></div>
+                </div>
+
+
+                <div class="form-group">
+                    <button type="submit" id="submitBtn">Submit Report</button>
+                </div>
+            </form>
+        </main>
+
+        <div id="notification" class="notification hidden"></div>
+        <div id="sending-overlay" class="sending-overlay hidden">
+            <div class="sending-content">
+                <div class="spinner"></div>
+                <p>Sending your report...</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin: 20px 0;">
+            Have a dog? Need a durable long-lasting name tag/plate for their harness?
+            <br/><br/>
+            <a href="https://3ddogtags.com.au?ref=sob" target="_blank">
+                <img src="images/white_black.jpg" alt="3D Dog Tags" style="max-width: 100%;">
+            </a>
+        </div>
+        <div id="disclaimer">
+            <br/><br/>
+            <em>Disclaimer: No information on this site is permanently stored. Form submisisons are temporarily (and securely) stored during the verification process, and then deleted.</em>
+            <em>Source code for this site is open and publicly available: https://github.com/ProxiBlue/stopoverfullbins</em><br/>
+            <em>I am not responsible for false reports. False reports will be between sender and the council. I do not condone false reports via this site. Be mature. Be reasonable.</em>
+        </div>
+        <div id="footer">
+            © 2025 ProxiBlue (ABN: 30 550 620 048) All rights reserved.
+        </div>
+    </div>
+
+    <script src="server/env.php"></script>
+    <!-- Google Places API script will be loaded dynamically with the API key -->
+    <script>
+        // Dynamically load Google Maps API with the key from environment
+        document.addEventListener('DOMContentLoaded', function() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initAutocomplete`;
+            script.async = true;
+            script.defer = true;
+            document.body.appendChild(script);
+        });
+    </script>
+    <script src="js/script.js"></script>
+</body>
+</html>

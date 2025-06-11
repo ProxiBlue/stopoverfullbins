@@ -1,0 +1,16 @@
+{
+    "name": "proxiblue/stopoverfullbins",
+    "description": "Stop Overfull Bins Application",
+    "type": "project",
+    "require": {
+        "php": ">=7.2",
+        "mailjet/mailjet-apiv3-php": "^1.5",
+        "intervention/image": "^2.7",
+        "sendgrid/sendgrid": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

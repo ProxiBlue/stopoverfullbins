@@ -1,0 +1,23 @@
+# Ignore environment variables file
+.env
+.env.live
+
+# Ignore vendor directory
+/vendor/
+
+# Ignore uploads directory
+/uploads/
+
+# Ignore IDE files
+.idea/
+.vscode/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore PHP error logs
+php_errors.log

@@ -1,0 +1,30 @@
+# Protect .env file
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Protect the uploads directory from direct access
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^uploads/ - [F,L]
+</IfModule>
+
+# Add security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# PHP settings
+<IfModule mod_php7.c>
+    # Maximum allowed size for uploaded files
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    # Maximum execution time
+    php_value max_execution_time 300
+    # Maximum input time
+    php_value max_input_time 300
+</IfModule>
