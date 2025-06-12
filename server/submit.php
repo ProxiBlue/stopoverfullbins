@@ -58,6 +58,9 @@ require_once __DIR__ . '/image_utils.php';
 // Include email utility functions
 require_once __DIR__ . '/email_utils.php';
 
+// Include counter utility functions
+require_once __DIR__ . '/counter_utils.php';
+
 // Create uploads directory if it doesn't exist
 if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -293,7 +296,7 @@ try {
     $body .= "<p>Please click the link below to verify your email address and send your message to the council:</p>";
     $body .= "<p><a href=\"{$verificationUrl}\">Validate Email and Release Message to Council</a></p>";
     $body .= "<h3>Message Preview:</h3>";
-    $body .= "<p>" . nl2br(htmlspecialchars($message)) . "</p>";
+    $body .= "<p>" . nl2br(html_entity_decode(htmlspecialchars($message), ENT_QUOTES, 'UTF-8')) . "</p>";
 
     if (!empty($uploadedFiles)) {
         $body .= "<p>Your submission includes " . count($uploadedFiles) . " image(s).</p>";
@@ -343,6 +346,9 @@ try {
     );
 
     if ($mailSent) {
+        // Increment the verification emails sent counter
+        incrementCounter('verification_emails_sent', $pdo);
+
         echo json_encode([
             'success' => true, 
             'message' => 'Your report has been submitted. Please check your email to verify your submission.'

@@ -12,6 +12,9 @@ require_once __DIR__ . '/logger.php';
 // Include email utility functions
 require_once __DIR__ . '/email_utils.php';
 
+// Include counter utility functions
+require_once __DIR__ . '/counter_utils.php';
+
 // Get token from URL
 $token = filter_input(INPUT_GET, 'token');
 if ($token !== null) {
@@ -106,7 +109,7 @@ if (!empty($images)) {
     }
 
     // Send email with attachments via SendGrid
-    $htmlContent = "<html><body><p>I would like to report an overfull bin at address: " . htmlspecialchars($submission['address']) . ".</p><p>Message: " . nl2br(htmlspecialchars($submission['message'])) . "</p></body></html>";
+    $htmlContent = "<html><body><p>I would like to report an overfull bin at address: " . htmlspecialchars($submission['address']) . ".</p><p>Message: " . nl2br(html_entity_decode(htmlspecialchars($submission['message']), ENT_QUOTES, 'UTF-8')) . "</p></body></html>";
     $mailSent = sendEmail(
         $submission['email'],
         "Bin Report",
@@ -119,7 +122,7 @@ if (!empty($images)) {
     );
 } else {
     // Send regular email without attachments via SendGrid
-    $htmlContent = "<html><body><p>I would like to report an overfull bin at address: " . htmlspecialchars($submission['address']) . ".</p><p>Message: " . nl2br(htmlspecialchars($submission['message'])) . "</p></body></html>";
+    $htmlContent = "<html><body><p>I would like to report an overfull bin at address: " . htmlspecialchars($submission['address']) . ".</p><p>Message: " . nl2br(html_entity_decode(htmlspecialchars($submission['message']), ENT_QUOTES, 'UTF-8')) . "</p></body></html>";
     $mailSent = sendEmail(
         $submission['email'],
         "Overfull Bin Report",
@@ -138,6 +141,9 @@ if ($mailSent) {
     $stmt = $pdo->prepare("UPDATE submissions SET verified = 1, verified_at = NOW() WHERE id = ?");
     $stmt->execute([$submission['id']]);
 
+    // Increment the emails verified counter
+    incrementCounter('emails_verified', $pdo);
+
     // Send confirmation email to user
     $confirmSubject = "Your Bin Report for address: {$submission['address']} has been sent to the council";
     // Get from_address from .env
@@ -153,7 +159,7 @@ if ($mailSent) {
     $confirmBody .= "<h3>Reported Address:</h3>";
     $confirmBody .= "<p>" . htmlspecialchars($submission['address']) . "</p>";
     $confirmBody .= "<h3>Message:</h3>";
-    $confirmBody .= "<p>" . nl2br(htmlspecialchars($submission['message'])) . "</p>";
+    $confirmBody .= "<p>" . nl2br(html_entity_decode(htmlspecialchars($submission['message']), ENT_QUOTES, 'UTF-8')) . "</p>";
 
     if (!empty($images)) {
         $confirmBody .= "<p>Your submission included " . count($images) . " image(s).</p>";
@@ -163,7 +169,7 @@ if ($mailSent) {
     $confirmBody .= "</body></html>";
 
     // Send confirmation email to user via SendGrid
-    sendEmail(
+    $confirmEmailSent = sendEmail(
         $fromAddress,
         "Stop Overfull Bins",
         $submission['email'],
@@ -173,6 +179,11 @@ if ($mailSent) {
         $submission['email'],
         false // Don't use reply-to as FROM for confirmation email
     );
+
+    // Increment the successful reports sent counter if confirmation email was sent
+    if ($confirmEmailSent) {
+        incrementCounter('successful_reports_sent', $pdo);
+    }
 
     // Delete image files after successful verification and email sending
     if (!empty($images)) {
